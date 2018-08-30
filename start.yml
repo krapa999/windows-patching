@@ -10,7 +10,7 @@
       
     - name: get all instance id
       debug:
-        var: instance_facts
+        var: instance_facts.instances
       
     #- name: Start all the instaces
      # ec2:
