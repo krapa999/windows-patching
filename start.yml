@@ -9,18 +9,10 @@
           "tag:Testing": Hello
       register: instance_facts
       
-    - name: get all instance id
-      set_fact:
-        ec2_instances: |
-          {% set instances = [] %}
-          {% for item in instance_facts.instances -%}
-            {{ instances.append(item.id) }}
-          {%- endfor %}
-          {{ instances }}
-      
+    
     - name: Debug
       debug:
-        msg: "Heloo {{ ec2_instances }}"
+        msg: "{{ instance_facts.instances.instance_id }}"
         
     - name: Start all the instaces
       ec2:
