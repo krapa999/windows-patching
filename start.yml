@@ -2,7 +2,7 @@
 - hosts: all
   gather_facts: no
   tasks:
-    - name: Stop all the instaces
+    - name: Start all the instaces
       ec2:
         region: us-east-1 
         instance_tags: 
