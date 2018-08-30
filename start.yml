@@ -16,7 +16,7 @@
       register: ec2_instances   
     - name: Print list
       debug:
-        msg: "{{ ec2_instances.0 }}"
+        msg: "{{ ec2_instances.subnet_id }}"
     
     - name: Start all the instaces
       ec2:
