@@ -13,15 +13,12 @@
     - name: Debug
       debug:
         msg: "{{ instance_facts.instances }}"
-      register: ec2_instances   
-    - name: Print list
-      debug:
-        msg: "{{ ec2_instances.subnet_id }}"
+      register: ec2_instances  
     
-    - name: Start all the instaces
+    - name: Stop all the instaces
       ec2:
         region: us-east-1 
-        instance_ids: "{{ item }}"
+        instance_tags: 
+          Testing: Hello
         state: stopped
         wait: yes
-      with_items: "{{ ec2_instances }}"
