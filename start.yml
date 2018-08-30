@@ -10,7 +10,8 @@
       
     - name: Start all the instaces
       ec2:
-        instance_ids: "{{ item.instance_id }}"
+        region: us-east-1 
+        instance_ids: "{{ item }}"
         state: running
         wait: yes
-      with_items: instance_facts.instances
+      with_items: instance_facts.instances.instance_id
