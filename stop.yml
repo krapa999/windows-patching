@@ -1,0 +1,11 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+    - name: Stop all the instaces
+      ec2:
+        region: us-east-1 
+        instance_tags: 
+          Testing: Hello
+        state: stopped
+        wait: yes
