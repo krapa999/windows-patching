@@ -16,7 +16,7 @@
       register: ec2_instances   
     - name: Print list
       debug:
-        msg: "{{ ec2_instances.instance }}"
+        msg: "{{ ec2_instances.0 }}"
     
     - name: Start all the instaces
       ec2:
