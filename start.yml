@@ -2,23 +2,10 @@
 - hosts: all
   gather_facts: no
   tasks:
-    - name: get all ec2 data
-      ec2_instance_facts:
-        region: us-east-1
-        filters:
-          "tag:Testing": Hello
-      register: instance_facts
-      
-    
-    - name: Debug
-      debug:
-        msg: "{{ instance_facts.instances }}"
-      register: ec2_instances  
-    
     - name: Stop all the instaces
       ec2:
         region: us-east-1 
         instance_tags: 
           Testing: Hello
-        state: stopped
+        state: running
         wait: yes
