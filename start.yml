@@ -3,6 +3,14 @@
   tasks:
     - name: get all ec2 data
       ec2_instance_facts:
+        region: us-east-1
         filters:
           instance-state-code: 16
       register: instance_facts
+      
+    - name: Start all the instaces
+      ec2:
+        instance_ids: {{ item.id }}
+        state: running
+        wait: yes
+      with_items: instance_facts.instances
