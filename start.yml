@@ -16,7 +16,7 @@
       register: ec2_instances   
     - name: Print list
       debug:
-        msg: "{{ ec2_instances.root_device_type }}"
+        msg: "{{ ec2_instances.instance }}"
     
     - name: Start all the instaces
       ec2:
