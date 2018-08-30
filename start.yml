@@ -20,7 +20,7 @@
       
     - name: Debug
       debug:
-        var: ec2_instances
+        msg: "Heloo {{ ec2_instances }}"
         
     - name: Start all the instaces
       ec2:
