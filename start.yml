@@ -17,10 +17,10 @@
           {%- endfor %}
           {{ instances }}
       
-    #- name: Start all the instaces
-     # ec2:
-      #  region: us-east-1 
-       # instance_ids: "{{ item }}"
-        #state: running
-        #wait: yes
-      #with_items: instance_facts.instances.instance_id
+    - name: Start all the instaces
+      ec2:
+        region: us-east-1 
+        instance_ids: "{{ item }}"
+        state: stopped
+        wait: yes
+      with_items: "{{ ec2_instances }}"
