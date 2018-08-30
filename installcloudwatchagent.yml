@@ -20,6 +20,33 @@
 # 6/28/2018
 
 ---
+ - name: Check if Cloudwatch Agent is Installed Already
+   command: status amazon-cloudwatch-agent
+   register: init_status_result
+   ignore_errors: yes
+   
+ - debug:
+   var: init_status_result.stderr
+   verbosity: 2
+   
+ - name: Remove Cloudwatch Service
+   win_service: 
+        name: AmazonCloudWatchAgent
+        state: absent
+   when: init_status_result.stderr | search("Error")
+   
+ - name: Unintsall Cloudwatch
+   win_shell: ./uninstall.ps1
+   args:
+    chdir: "c:/windows/temp/CloudWatch/SCCM"
+   ignore_errors: True
+   
+ - name: Remove Package
+   win_file:
+     path: "c:/windows/temp/CloudWatch"
+     state: absent
+    
+    
  - set_fact: SWPkg="CloudWatch"
  - name: Get Agentzip out of S3
    delegate_to: localhost
