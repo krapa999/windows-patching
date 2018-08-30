@@ -19,7 +19,7 @@
       
     - name: Debug
       debug:
-        var: ec2_instances
+        var: instances
         
     - name: Start all the instaces
       ec2:
