@@ -2,3 +2,7 @@
 - hosts: all
   tasks:
     - name: get all ec2 data
+      ec2_instance_facts:
+        filters:
+          instance-state-code: 16
+      register: instance_facts
