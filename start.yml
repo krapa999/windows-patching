@@ -5,7 +5,7 @@
       ec2_instance_facts:
         region: us-east-1
         filters:
-          instance-state-code: 16
+          "tag:Testing": Hello
       register: instance_facts
       
     - name: Start all the instaces
