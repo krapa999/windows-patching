@@ -1,5 +1,6 @@
 ---
 - hosts: all
+  gather_facts: no
   tasks:
     - name: get all ec2 data
       ec2_instance_facts:
