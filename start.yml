@@ -12,8 +12,11 @@
     
     - name: Debug
       debug:
-        msg: "{{ instance_facts.instances.instance_id }}"
-        
+        msg: "{{ instance_facts.instances }}"
+      register: ec2_instances   
+    - name: Print list
+      debug:
+        var: ec2_instances
     - name: Start all the instaces
       ec2:
         region: us-east-1 
