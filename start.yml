@@ -8,10 +8,14 @@
           "tag:Testing": Hello
       register: instance_facts
       
-    - name: Start all the instaces
-      ec2:
-        region: us-east-1 
-        instance_ids: "{{ item }}"
-        state: running
-        wait: yes
-      with_items: instance_facts.instances.instance_id
+    - name: get all instance id
+      debug:
+        var: instance_facts
+      
+    #- name: Start all the instaces
+     # ec2:
+      #  region: us-east-1 
+       # instance_ids: "{{ item }}"
+        #state: running
+        #wait: yes
+      #with_items: instance_facts.instances.instance_id
