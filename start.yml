@@ -9,9 +9,13 @@
       register: instance_facts
       
     - name: get all instance id
-      debug:
-        var: "{{ item.id }}"
-      with_items: instance_facts.instances
+      set_fact:
+        ec2_instances: |
+          {% set instances = [] %}
+          {% for item in instance_facts.instances -%}
+            {{ instances.append(item.id) }}
+          {%- endfor %}
+          {{ instances }}
       
     #- name: Start all the instaces
      # ec2:
