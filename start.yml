@@ -10,7 +10,7 @@
       
     - name: get all instance id
       debug:
-        var: "{{ item.instance_id }}"
+        var: "{{ item[0] }}"
       with_items: instance_facts.instances
       
     #- name: Start all the instaces
