@@ -17,6 +17,10 @@
           {%- endfor %}
           {{ instances }}
       
+    - name: Debug
+      debug:
+        var: ec2_instances
+        
     - name: Start all the instaces
       ec2:
         region: us-east-1 
