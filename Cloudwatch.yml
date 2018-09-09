@@ -12,3 +12,7 @@
 
  - name: Start Cloudwatch service
    win_shell: Restart-Service AmazonSSMAgent
+
+
+#https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html
+#https://www.reddit.com/r/aws/comments/7m7pvw/question_centralized_logging_cloudwatch_vs_s3_vs/
