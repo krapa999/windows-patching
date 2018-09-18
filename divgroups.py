@@ -6,7 +6,7 @@ def lambda_handler(event, context):
     x=d.strftime('%m')
     x='AMI_%s' % x
     
-    
+    total_instances=[]
     def count_instances(ec2):
         total_instances = 0
         instances = ec2.instances.filter(          Filters=[
@@ -17,10 +17,9 @@ def lambda_handler(event, context):
                     ]
                 }
             ])
-        for _ in instances:
-            total_instances += 1
-        return total_instances
-    num_instances = count_instances(ec2)
+        for j in instances:
+           total_instances.append(j["InstanceId"])
+        
     ec2client = boto3.client('ec2')
     response = ec2client.describe_images(
         Filters=[
@@ -51,10 +50,11 @@ def lambda_handler(event, context):
                 }
             ]
         )
-        instancelist = []
+        instancelist1 = []
         for reservation in (response["Reservations"]):
             for instance in reservation["Instances"]:
-                instancelist.append(instance["InstanceId"])
+                instancelist1.append(instance["InstanceId"])
+        instancelist=list(set(total_instances)-list(instancelits1))
         x=len(instancelist)
         x=x-1
         y=x/3
