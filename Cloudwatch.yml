@@ -17,3 +17,4 @@
 #https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html
 #https://www.reddit.com/r/aws/comments/7m7pvw/question_centralized_logging_cloudwatch_vs_s3_vs/
 #https://aws.amazon.com/blogs/mt/how-to-export-ec2-instance-execution-logs-to-an-s3-bucket-using-cloudwatch-logs-lambda-and-cloudformation/
+#https://stackoverflow.com/questions/8456181/python-cant-send-attachment-files-through-email
