@@ -11,12 +11,12 @@
        query: all
        #max_items: 97
        function_name: "{{ item }}"
-     register: _lambda_facts
+     register: res
      with_items: 
         - testpass
         - ram
    - name: psad
-     debug: var= {{ _lambda_facts }}
+     debug: msg= {{ res }}
 
    - ec2_metric_alarm:
       name: "Lambda execution fail Alerts - {{ item }}"
