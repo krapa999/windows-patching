@@ -16,7 +16,7 @@
         - testpass
         - ram
    - name: psad
-     debug: msg= {{ res }}
+     debug: msg= "{{ res }}"
 
    - ec2_metric_alarm:
       name: "Lambda execution fail Alerts - {{ item }}"
