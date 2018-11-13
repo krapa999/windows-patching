@@ -16,8 +16,7 @@
         - testpass
         - ram
    - set_fact:
-       lnbda: "{{ _lambda_facts[0].ansible_facts.lambda_facts.function|list }}"
-       lnbda1: "{{ _lambda_facts[1].ansible_facts.lambda_facts.function|list }}"
+       lnbda: "{{ _lambda_facts.ansible_facts.lambda_facts.function|list }}"
 
    - ec2_metric_alarm:
       name: "Lambda execution fail Alerts - {{ item }}"
@@ -35,7 +34,5 @@
       description: "When lambda execution fails then we will trigger the Alarm"
       dimensions: "{'FunctionName':'{{ item }}'}"
       alarm_actions: ["arn:aws:sns:us-east-1:216706741663:Alarm"]
-     with_items: 
-        - lnbda
-        - lnbda1
+     with_items: "{{ lnbda }}"
 ...
