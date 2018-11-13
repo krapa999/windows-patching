@@ -14,7 +14,7 @@
      register: _lambda_facts
      with_items: 
         - testpass
-        - Ram
+        - ram
    - set_fact:
        lnbda: "{{ _lambda_facts[0].ansible_facts.lambda_facts.function|list }}"
        lnbda1: "{{ _lambda_facts[1].ansible_facts.lambda_facts.function|list }}"
