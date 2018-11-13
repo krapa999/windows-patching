@@ -15,8 +15,8 @@
      with_items: 
         - testpass
         - ram
-   - set_fact:
-       lnbda: "{{ _lambda_facts.ansible_facts.lambda_facts.function|list }}"
+   - name: psad
+     debug: var= {{ _lambda_facts }}
 
    - ec2_metric_alarm:
       name: "Lambda execution fail Alerts - {{ item }}"
