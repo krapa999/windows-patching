@@ -1,0 +1,42 @@
+---
+ - hosts: localhost
+   gather_facts: False
+   become: false
+   tasks:
+   - name: List all function
+     lambda_facts:
+       region: us-east-1
+       aws_access_key: "{{ aws_access_key }}"
+       aws_secret_key: "{{ aws_secret_key }}"
+       query: all
+       #max_items: 97
+       function_name: "{{ item }}"
+     register: _lambda_facts
+     with_items: 
+        - testpass
+        - Ram
+   - set_fact:
+       lnbda: "{{ _lambda_facts[0].ansible_facts.lambda_facts.function|list }}"
+       lnbda1: "{{ _lambda_facts[1].ansible_facts.lambda_facts.function|list }}"
+
+   - ec2_metric_alarm:
+      name: "Lambda execution fail Alerts - {{ item }}"
+      state: present
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
+      region: us-east-1
+      metric: "Errors"
+      namespace: "AWS/Lambda"
+      statistic: Average
+      comparison: ">="
+      threshold: 1
+      period: 60
+      evaluation_periods: 1
+      #unit: "Percent
+      description: "When lambda execution fails then we will trigger the Alarm"
+      dimensions: "{'FunctionName':'{{ item }}'}"
+      alarm_actions: ["arn:aws:sns:us-east-1:216706741663:Alarm"]
+     with_items: 
+        - lnbda
+        - lnbda1
+...
