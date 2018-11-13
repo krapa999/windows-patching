@@ -6,8 +6,8 @@
    - name: List all function
      lambda_facts:
        region: us-east-1
-       aws_access_key: "{{ aws_access_key }}"
-       aws_secret_key: "{{ aws_secret_key }}"
+       
+       
        query: all
        #max_items: 97
        function_name: "{{ item }}"
@@ -22,8 +22,7 @@
    - ec2_metric_alarm:
       name: "Lambda execution fail Alerts - {{ item }}"
       state: present
-      aws_access_key: "{{ aws_access_key }}"
-      aws_secret_key: "{{ aws_secret_key }}"
+
       region: us-east-1
       metric: "Errors"
       namespace: "AWS/Lambda"
