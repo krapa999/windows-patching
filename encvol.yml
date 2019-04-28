@@ -1,0 +1,149 @@
+---
+- name: Encrypt Volume
+  hosts: localhost
+  strategy: free
+  gather_facts: False
+  become: false
+    
+  tasks:
+    - name: include common file
+      include: ../../common/SetAccountCreds.yml
+
+    - name: Get instance_id
+      ec2_instance_facts:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        region: "{{ Region }}"
+        filters:
+         instance-id: "{{ instance_id }}"    
+      register: ec2
+
+    - name: Get volume facts
+      ec2_vol:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        region: "{{ Region }}"
+        instance: "{{ instance_id }}"
+        state: list
+      register: vol   
+
+    - set_fact:  
+        Zone: "{{ ec2.instances[0].placement.availability_zone }}"
+        InstId: "{{ vars['ec2']['instances'][0]['instance_id'] }}"
+        Name: "{{ ec2.instances[0].tags.Name }}"
+  
+    
+    
+    - debug: msg="{{ vol.volumes | map(attribute='id') | list }}"
+    - set_fact:  
+        volid: "{{ vol.volumes | map(attribute='id') | list }}"
+        devicetype: "{{ vol.volumes | map(attribute='type') | list }}"
+        devicename: "{{ ec2.instances[0].block_device_mappings | map(attribute='device_name') | list }}"
+        SIZE: "{{ vol.volumes | map(attribute='size') | list }}"
+
+    
+
+    - name: Snapshot of original-volume.
+      ec2_snapshot:
+        aws_access_key: "{{ aws_access_key }}" 
+        aws_secret_key: "{{ aws_secret_key }}"
+        volume_id: "{{ item }}"
+        region: "{{ Region }}"
+        description: Original backup of "{{ InstId }}" before re-encryption
+        wait: yes
+      loop: "{{ volid }}"      
+      register: vol
+
+    - debug: var=vol
+    - debug: msg="{{vol.results | map(attribute='snapshot_id') | list }}"
+    - set_fact:  
+        SSID: "{{ vol.results | map(attribute='snapshot_id') | list }}"
+
+    - name: copy snapshot to same region to encrypt it 
+      ec2_snapshot_copy: 
+        aws_access_key: "{{ aws_access_key }}" 
+        aws_secret_key: "{{ aws_secret_key }}"
+        source_region: "{{ Region }}"
+        source_snapshot_id: "{{ item }}"
+        encrypted: yes
+        kms_key_id: "{{ KMS_Key }}"
+        region: "{{ Region }}"
+        description: This is encrypted snap of "{{ InstId }}"
+        wait: yes 
+      loop: "{{ SSID }}"     
+      register: ss
+
+    - debug: var=ss
+    - debug: msg="{{ss.results | map(attribute='snapshot_id') | list }}"
+    - set_fact:  
+        NewSSID: "{{ ss.results | map(attribute='snapshot_id') | list }}" 
+
+    - name: create volume from snapshot
+      ec2_vol:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        region: "{{ Region }}"
+        snapshot: "{{ item.0 }}"
+        volume_type: "{{ item.2 }}"
+        volume_size: "{{ item.1 }}"
+        zone: "{{ Zone }}"
+        tags:
+            Name: "{{ Name }}"
+            ConfigMgmtParams: "{{ item.3 }}"
+      with_together:
+         - "{{ NewSSID }}"
+         - "{{ SIZE }}" 
+         - "{{ devicetype }}" 
+         - "{{ devicename }}"       
+      register: newvol   
+    - debug: var=newvol
+    - debug: msg="{{ newvol.results | map(attribute='volume_id') | list }}"
+    
+    - set_fact:  
+        newvolid: "{{ newvol.results | map(attribute='volume_id') | list }}"
+    
+    - name: Detach the EC2 volume
+      ec2_vol:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        region: "{{ Region }}"
+        id: "{{ item }} "
+        instance: None
+      loop: "{{ volid }}"           
+
+    - name: Stop ec2 instance to deattach/attach volume
+      ec2:
+         aws_access_key: "{{ aws_access_key }}"
+         aws_secret_key: "{{ aws_secret_key }}"
+         region: "{{ Region }}"
+         instance_ids: "{{ InstId }}"
+         state: stopped
+         wait: True  
+
+
+    - name: Attach the new and encrypted EC2 volume
+      ec2_vol:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        region: "{{ Region }}"
+        id: "{{ item.0 }} "
+        instance: "{{ InstId }}"
+        device_name: "{{ item.1 }}"
+        delete_on_termination: yes 
+      with_together:
+         - "{{ newvolid }}"
+         - "{{ devicename }}"  
+
+    - name: Start ec2 instance
+      ec2:
+         aws_access_key: "{{ aws_access_key }}"
+         aws_secret_key: "{{ aws_secret_key }}"
+         region: "{{ Region }}"
+         instance_ids: "{{ InstId }}"
+         state: running
+         wait: True         
+    
+    
+        
+        
+
